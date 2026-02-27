@@ -38,3 +38,10 @@ urlpatterns = [
     path('advisor/', TemplateView.as_view(template_name='advisor.html'), name='advisor'),
     path('community/', TemplateView.as_view(template_name='community.html'), name='community'),
 ]
+
+# Serve static files during development
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
