@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Analyzer - FinanceAI</title>
+    <link rel="icon" type="image/png" href="{% static 'stock.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'index' %}" class="logo">
+                <div class="logo-icon logo-icon-chart">
+                    <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 9-9"/><path d="M21 12v6h-6"/></svg>
+                </div>
+                <span class="gradient-text">FinanceAI</span>
+            </a>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span id="user-name" style="color: var(--text-secondary); font-size: 14px;">Welcome, User</span>
+                <button onclick="logout()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    {% include 'includes/sidebar.html' with active='portfolio' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Portfolio Analyzer</h1>
+            <p class="page-subtitle">Track, analyze, and optimize your investments</p>
+        </div>
+
+        <!-- Portfolio Summary -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Value</div>
+                <div class="stat-value gradient-text" id="portfolio-total-value">$124,532.80</div>
+                <div class="stat-change positive" id="portfolio-total-change">
+                    <span id="portfolio-total-arrow">↑</span>
+                    <span id="portfolio-total-change-text">+5.23% today</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Gain/Loss</div>
+                <div class="stat-value" id="portfolio-total-gain" style="color: var(--accent-green);">+$18,432.50</div>
+                <div class="stat-change positive" id="portfolio-total-gain-change">
+                    <span id="portfolio-total-gain-arrow">↑</span>
+                    <span id="portfolio-total-gain-text">+17.38% all time</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Day's Gain/Loss</div>
+                <div class="stat-value" id="portfolio-day-gain" style="color: var(--accent-green);">+$1,245.80</div>
+                <div class="stat-change positive" id="portfolio-day-gain-change">
+                    <span id="portfolio-day-gain-arrow">↑</span>
+                    <span id="portfolio-day-gain-text">+1.01% today</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Risk Level</div>
+                <div class="stat-value" style="color: var(--accent-orange);">Moderate</div>
+                <div class="stat-change" style="color: var(--text-secondary);">
+                    <span>Score: 68/100</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <!-- Allocation Pie Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Portfolio Allocation</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="allocationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Performance History</h3>
+                    <select class="form-select" style="width: 100px; padding: 6px 10px; font-size: 12px;">
+                        <option>1M</option>
+                        <option>3M</option>
+                        <option>6M</option>
+                        <option>1Y</option>
+                        <option>All</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Normal Price vs After News Effect -->
+        <div class="chart-card" style="margin-top: 24px;">
+            <div class="chart-header">
+                <h3 class="chart-title">Normal Price vs After News Effect</h3>
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <span style="font-size: 12px; color: var(--text-secondary);">Compare portfolio value over time with news sentiment impact</span>
+                    <select id="news-effect-range" class="form-select" style="width: 90px; padding: 6px 10px; font-size: 12px;">
+                        <option value="1D">1D</option>
+                        <option value="5D">5D</option>
+                        <option value="1W">1W</option>
+                        <option value="1M" selected>1M</option>
+                        <option value="3M">3M</option>
+                        <option value="6M">6M</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-container" style="height: 320px;">
+                <canvas id="newsEffectChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Add Stock Form -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 24px;">
+            <h3 style="margin-bottom: 20px;">Add Stock to Portfolio</h3>
+            <form id="add-stock-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: end;">
+                <div>
+                    <label class="form-label">Stock Symbol</label>
+                    <input type="text" id="stock-symbol" class="form-input" placeholder="e.g., AAPL" required>
+                </div>
+                <div>
+                    <label class="form-label">Shares</label>
+                    <input type="number" id="stock-shares" class="form-input" placeholder="Number of shares" min="0.01" step="0.01" required>
+                </div>
+                <div>
+                    <label class="form-label">Purchase Price</label>
+                    <input type="number" id="stock-price" class="form-input" placeholder="Price per share" min="0.01" step="0.01" required>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <span>+</span>
+                        Add Stock
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Risk Indicator -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                <div>
+                    <h3 style="margin-bottom: 8px;">Portfolio Risk Analysis</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Based on your current holdings and market volatility</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 24px;">
+                    <div style="text-align: center;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(var(--accent-orange) 0% 68%, var(--bg-glass) 68% 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center;">
+                                <span style="font-weight: 700; color: var(--accent-orange);">68</span>
+                            </div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--text-secondary);">Risk Score</span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <div style="padding: 16px; background: var(--bg-glass); border-radius: var(--radius-md);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Volatility</div>
+                    <div style="font-weight: 600; color: var(--accent-orange);">Medium (18.5%)</div>
+                </div>
+                <div style="padding: 16px; background: var(--bg-glass); border-radius: var(--radius-md);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Diversification</div>
+                    <div style="font-weight: 600; color: var(--accent-green);">Good (7 sectors)</div>
+                </div>
+                <div style="padding: 16px; background: var(--bg-glass); border-radius: var(--radius-md);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Beta</div>
+                    <div style="font-weight: 600; color: var(--accent-cyan);">1.12</div>
+                </div>
+                <div style="padding: 16px; background: var(--bg-glass); border-radius: var(--radius-md);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Sharpe Ratio</div>
+                    <div style="font-weight: 600; color: var(--accent-green);">1.45</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Table -->
+        <div class="glass-card" style="padding: 24px; overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Your Holdings</h3>
+                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="exportPortfolio()">
+                    <span>📥</span>
+                    Export CSV
+                </button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="data-table" id="portfolio-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Company</th>
+                            <th>Shares</th>
+                            <th>Avg Price</th>
+                            <th>Current Price</th>
+                            <th>Market Value</th>
+                            <th>Gain/Loss</th>
+                            <th>% Change</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 600;">AAPL</td>
+                            <td>Apple Inc.</td>
+                            <td>50</td>
+                            <td>$150.00</td>
+                            <td>$182.50</td>
+                            <td>$9,125.00</td>
+                            <td class="text-green">+$1,625.00</td>
+                            <td class="text-green">+21.67%</td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeStock('AAPL')">Remove</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">TSLA</td>
+                            <td>Tesla Inc.</td>
+                            <td>30</td>
+                            <td>$200.00</td>
+                            <td>$215.30</td>
+                            <td>$6,459.00</td>
+                            <td class="text-green">+$459.00</td>
+                            <td class="text-green">+7.65%</td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeStock('TSLA')">Remove</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">INFY</td>
+                            <td>Infosys Ltd.</td>
+                            <td>100</td>
+                            <td>$18.50</td>
+                            <td>$19.85</td>
+                            <td>$1,985.00</td>
+                            <td class="text-green">+$135.00</td>
+                            <td class="text-green">+7.30%</td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeStock('INFY')">Remove</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">MSFT</td>
+                            <td>Microsoft Corp.</td>
+                            <td>25</td>
+                            <td>$280.00</td>
+                            <td>$312.45</td>
+                            <td>$7,811.25</td>
+                            <td class="text-green">+$811.25</td>
+                            <td class="text-green">+11.58%</td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeStock('MSFT')">Remove</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">GOOGL</td>
+                            <td>Alphabet Inc.</td>
+                            <td>40</td>
+                            <td>$130.00</td>
+                            <td>$141.20</td>
+                            <td>$5,648.00</td>
+                            <td class="text-green">+$448.00</td>
+                            <td class="text-green">+8.62%</td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="removeStock('GOOGL')">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- AI Recommendations -->
+        <div class="glass-card" style="padding: 24px; margin-top: 24px;">
+            <h3 style="margin-bottom: 20px;">🤖 AI Portfolio Recommendations</h3>
+            <div style="display: grid; gap: 16px;">
+                <div style="padding: 20px; background: var(--bg-glass); border-radius: var(--radius-md); border-left: 4px solid var(--accent-cyan);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="color: var(--accent-cyan);">💡</span>
+                        <span style="font-weight: 600;">Diversification Opportunity</span>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 14px;">
+                        Your portfolio is heavily weighted in technology (65%). Consider adding healthcare or energy stocks 
+                        to improve sector diversification and reduce risk.
+                    </p>
+                </div>
+                <div style="padding: 20px; background: var(--bg-glass); border-radius: var(--radius-md); border-left: 4px solid var(--accent-green);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="color: var(--accent-green);">📈</span>
+                        <span style="font-weight: 600;">Strong Performer</span>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 14px;">
+                        AAPL has been your best performer with +21.67% gains. The AI predicts continued growth 
+                        based on strong fundamentals and positive market sentiment.
+                    </p>
+                </div>
+                <div style="padding: 20px; background: var(--bg-glass); border-radius: var(--radius-md); border-left: 4px solid var(--accent-orange);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="color: var(--accent-orange);">⚠️</span>
+                        <span style="font-weight: 600;">Risk Alert</span>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 14px;">
+                        TSLA shows high volatility. Consider setting a stop-loss at $195 to protect your gains 
+                        in case of a market downturn.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/news-notification.js' %}"></script>
+    <script src="{% static 'js/portfolio.js' %}"></script>
+</body>
+</html>

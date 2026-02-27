@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Sign In - FinanceAI</title>
+    <link rel="icon" type="image/png" href="{% static 'stock.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="login-page">
+    <div class="login-bg">
+        <img class="login-bg-img" src="{% static 'media/imag.jpg' %}" alt="">
+        <div class="login-bg-overlay"></div>
+    </div>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="{% url 'index' %}" class="logo" style="justify-content: center; margin-bottom: 24px;">
+                    <div class="logo-icon logo-icon-chart">
+                        <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 9-9"/><path d="M21 12v6h-6"/></svg>
+                    </div>
+                    <span class="gradient-text">FinanceAI</span>
+                </a>
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="auth-subtitle">Sign in to access your financial dashboard</p>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" style="width: 16px; height: 16px;">
+                        <span style="font-size: 14px; color: var(--text-secondary);">Remember me</span>
+                    </label>
+                    <a href="#" style="font-size: 14px; color: var(--accent-cyan);">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span id="btn-text">Sign In</span>
+                    <div id="btn-spinner" class="spinner hidden"></div>
+                </button>
+
+                <div style="margin: 20px 0; text-align: center;">
+                    <span style="color: var(--text-secondary); font-size: 13px;">— or —</span>
+                </div>
+                
+                <!-- Wallet Address QR Login -->
+                <div style="background: var(--bg-glass); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 20px;">
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; text-align: center;">Scan with Mobile Wallet</div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; display: flex; justify-content: center;">
+                        <div id="walletAddressQR" style="width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 12px;">Generating QR...</div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 11px; color: var(--text-muted); text-align: center;">
+                        <div id="walletAddressDisplay" style="padding: 8px; background: rgba(255,255,255,0.05); border-radius: 6px; word-break: break-all; font-family: monospace;">Loading...</div>
+                    </div>
+                </div>
+                
+                <div id="wallet-section">
+                    <button type="button" id="connect-wallet-btn" class="btn btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>🦊</span>
+                        <span id="wallet-btn-text">Connect Web3 Wallet</span>
+                        <div id="wallet-spinner" class="spinner hidden"></div>
+                    </button>
+                    <button type="button" id="connect-qr-btn" class="btn btn-secondary btn-wallet-qr wc-btn-qr" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 15h6v6H3v-6zm2 2v2h2v-2H5zm8-2h6v6h-6v-6zm2 2v2h2v-2h-2zm4-12h2v2h2v2h2v2h-2v2h-2v2h-2v-2h-2v-2h2V9h2V7h2V5z"/></svg>
+                        <span id="qr-btn-text">Sign in with QR (beta)</span>
+                        <div id="qr-spinner" class="spinner hidden"></div>
+                    </button>
+                    <div id="wallet-install-prompt" class="hidden" style="padding: 14px; background: var(--bg-glass); border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-top: 8px;">
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 10px;">To sign in with a crypto wallet, install a Web3 wallet extension or use QR (beta):</p>
+                        <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px;">
+                            <span>🦊</span> Install MetaMask
+                        </a>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">QR login via phone wallet is experimental and may fail on some networks.</p>
+                    </div>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="{% url 'register' %}">Create one</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.WALLETCONNECT_PROJECT_ID = '{{ walletconnect_project_id|default:"" }}';
+    </script>
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/wallet.js' %}"></script>
+    <script type="module" src="{% static 'js/walletconnect-qr.js' %}"></script>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btnText = document.getElementById('btn-text');
+            const btnSpinner = document.getElementById('btn-spinner');
+            const errorMessage = document.getElementById('error-message');
+
+            btnText.textContent = 'Signing in...';
+            btnSpinner.classList.remove('hidden');
+            errorMessage.classList.remove('show');
+            errorMessage.textContent = '';
+
+            const result = await login(email, password);
+            if (result.success) {
+                window.location.href = '/dashboard/';
+                return;
+            }
+            errorMessage.textContent = result.error || 'Invalid email or password.';
+            errorMessage.classList.add('show');
+            btnText.textContent = 'Sign In';
+            btnSpinner.classList.add('hidden');
+        });
+
+        if (typeof connectWallet === 'function' && typeof hasWallet === 'function') {
+            var walletBtn = document.getElementById('connect-wallet-btn');
+            var installPrompt = document.getElementById('wallet-install-prompt');
+            if (!hasWallet() && installPrompt) {
+                walletBtn.style.display = 'none';
+                installPrompt.classList.remove('hidden');
+            }
+            walletBtn.addEventListener('click', function () {
+                const btnText = document.getElementById('wallet-btn-text');
+                const walletSpinner = document.getElementById('wallet-spinner');
+                const errorMessage = document.getElementById('error-message');
+                connectWallet({
+                    onStart: function () {
+                        btnText.textContent = 'Connect & sign...';
+                        walletSpinner.classList.remove('hidden');
+                        errorMessage.classList.remove('show');
+                    },
+                    onError: function (msg) {
+                        errorMessage.textContent = msg;
+                        errorMessage.classList.add('show');
+                        btnText.textContent = 'Connect Web3 Wallet';
+                        walletSpinner.classList.add('hidden');
+                        if (!hasWallet() && installPrompt) {
+                            installPrompt.classList.remove('hidden');
+                        }
+                    }
+                });
+            });
+            if (window.location.hash === '#wallet' && hasWallet()) {
+                setTimeout(function () { walletBtn.click(); }, 400);
+            } else if (window.location.hash === '#wallet' && installPrompt) {
+                installPrompt.classList.remove('hidden');
+                walletBtn.style.display = 'none';
+            }
+        }
+
+        // Wallet Address QR Code Login (Auto-generated)
+        if (typeof generateWalletAddressQR === 'function') {
+            // Hardcoded wallet address - auto-generate on page load
+            const defaultWalletAddress = '0x742d35Cc6634C0532925a3b844Bc234e4f135ebb';
+            
+            // Generate QR immediately on page load
+            generateWalletAddressQR(defaultWalletAddress, true);
+            
+            // Display the wallet address
+            const addressDisplay = document.getElementById('walletAddressDisplay');
+            if (addressDisplay) {
+                addressDisplay.textContent = defaultWalletAddress;
+            }
+        }
+
+    </script>
+</body>
+</html>

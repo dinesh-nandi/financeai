@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Intelligence - FinanceAI</title>
+    <link rel="icon" type="image/png" href="{% static 'stock.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'index' %}" class="logo">
+                <div class="logo-icon logo-icon-chart">
+                    <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 9-9"/><path d="M21 12v6h-6"/></svg>
+                </div>
+                <span class="gradient-text">FinanceAI</span>
+            </a>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span id="user-name" style="color: var(--text-secondary); font-size: 14px;">Welcome, User</span>
+                <button onclick="logout()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    {% include 'includes/sidebar.html' with active='news' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Financial News Intelligence</h1>
+            <p class="page-subtitle">AI-powered sentiment analysis of market-moving news</p>
+        </div>
+
+        <!-- Sentiment Overview -->
+        <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="stat-card">
+                <div class="stat-label">Overall Sentiment</div>
+                <div class="stat-value" style="color: var(--accent-green);">Bullish</div>
+                <div class="stat-change positive">
+                    <span>↑</span>
+                    <span>+12% vs yesterday</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Positive News</div>
+                <div class="stat-value" style="color: var(--accent-green);">68%</div>
+                <div class="stat-change" style="color: var(--text-secondary);">
+                    <span>34 articles</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Negative News</div>
+                <div class="stat-value" style="color: var(--accent-red);">18%</div>
+                <div class="stat-change" style="color: var(--text-secondary);">
+                    <span>9 articles</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Neutral News</div>
+                <div class="stat-value" style="color: var(--accent-orange);">14%</div>
+                <div class="stat-change" style="color: var(--text-secondary);">
+                    <span>7 articles</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <!-- Sentiment Gauge -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Market Sentiment Gauge</h3>
+                </div>
+                <div class="chart-container" style="display: flex; justify-content: center; align-items: center;">
+                    <canvas id="sentimentGauge"></canvas>
+                </div>
+            </div>
+
+            <!-- Sentiment Trend -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Sentiment Trend (7 Days)</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="sentimentTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Filter -->
+        <div class="glass-card" style="padding: 20px; margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                <label style="color: var(--text-secondary); font-size: 14px;">Filter by:</label>
+                <select class="form-select" style="width: 150px;">
+                    <option value="">All Categories</option>
+                    <option value="tech">Technology</option>
+                    <option value="finance">Finance</option>
+                    <option value="energy">Energy</option>
+                    <option value="healthcare">Healthcare</option>
+                </select>
+                <select class="form-select" style="width: 150px;">
+                    <option value="">All Sentiments</option>
+                    <option value="positive">Positive</option>
+                    <option value="negative">Negative</option>
+                    <option value="neutral">Neutral</option>
+                </select>
+                <select class="form-select" style="width: 150px;">
+                    <option value="">All Impacts</option>
+                    <option value="high">High Impact</option>
+                    <option value="medium">Medium Impact</option>
+                    <option value="low">Low Impact</option>
+                </select>
+                <div style="margin-left: auto;">
+                    <input type="text" class="form-input" placeholder="Search news..." style="width: 250px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- News Cards Grid -->
+        <div id="news-list" class="features-grid" style="margin-bottom: 32px;">
+            <!-- Live news cards will be injected here by news.js -->
+        </div>
+
+        <!-- Correlation / Technical Graph -->
+        <div class="chart-card">
+            <div class="chart-header" style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h3 class="chart-title">News Sentiment vs Market Correlation</h3>
+                    <button type="button" id="correlationHelpBtn" class="btn btn-icon" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--bg-glass); border: 1px solid var(--border-color); cursor: pointer; font-size: 16px; transition: all 0.3s ease; hover-bg: rgba(0, 212, 255, 0.1);" 
+                        title="Click to see how to use this indicator | 点击查看如何使用此指标"
+                        onmouseover="this.style.borderColor='var(--accent-cyan)'; this.style.background='rgba(0, 212, 255, 0.1)'"
+                        onmouseout="this.style.borderColor='var(--border-color)'; this.style.background='var(--bg-glass)'">
+                        ℹ️
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Instructions Panel (Hidden by default) -->
+            <div id="correlationInstructions" style="display: none; background: var(--bg-glass); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 16px; animation: slideDown 0.3s ease;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="font-size: 14px; font-weight: 600; color: var(--accent-cyan); margin: 0;">📊 How to Use This Indicator</h3>
+                    <button type="button" onclick="document.getElementById('correlationInstructions').style.display = 'none';" style="background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-secondary);">✕</button>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--accent-cyan);">📊 What This Indicator Shows</h4>
+                    <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                        This chart displays the relationship between <strong>news sentiment</strong> (emotional tone of market news) and <strong>market price movements</strong>. It helps you understand how strongly news affects stock prices.
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--accent-green);">🎯 How to Use It</h4>
+                    <ul style="font-size: 12px; color: var(--text-secondary); line-height: 1.8; margin: 0; padding-left: 20px;">
+                        <li><strong>Strong Positive Correlation (>0.7)</strong> – News sentiment directly influences price. When news is positive, prices tend to rise.</li>
+                        <li><strong>Moderate Correlation (0.3-0.7)</strong> – News has some influence but other factors matter too.</li>
+                        <li><strong>Weak Correlation (<0.3)</strong> – Price moves independently of sentiment. News may not be the main driver.</li>
+                        <li><strong>Negative Correlation (<0)</strong> – Opposite trend: positive news but price falls (or vice versa). Watch for reversals.</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--accent-orange);">⚠️ Key Metrics Explained</h4>
+                    <div style="background: rgba(255,255,255,0.02); padding: 10px; border-radius: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+                        <div style="margin-bottom: 8px;"><strong>Price Line (Blue)</strong> – Current stock price trend over time</div>
+                        <div style="margin-bottom: 8px;"><strong>Sentiment Score (Green)</strong> – Overall market sentiment (-100 to +100). Higher = more bullish</div>
+                        <div style="margin-bottom: 8px;"><strong>EMA (7-day, Orange)</strong> – Smoothed price trend. Shows momentum direction</div>
+                        <div style="margin-bottom: 8px;"><strong>MACD (Red/Cyan)</strong> – Momentum indicator. Crossing signals buy/sell opportunities</div>
+                        <div><strong>ROC (Purple)</strong> – Rate of Change. Speed of price movement. Higher = faster change</div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--accent-purple);">💡 Pro Tips</h4>
+                    <ul style="font-size: 12px; color: var(--text-secondary); line-height: 1.8; margin: 0; padding-left: 20px;">
+                        <li>Look for <strong>divergences</strong> – When sentiment improves but price doesn't follow, a reversal may be coming</li>
+                        <li>Use with other indicators – Don't rely on sentiment alone. Combine with technical & fundamental analysis</li>
+                        <li>Watch for <strong>extreme sentiment</strong> – Very positive or negative news often leads to overreaction</li>
+                        <li>Check correlation <strong>trends</strong> – Does sentiment lead price movements by days? Use that for prediction</li>
+                        <li><strong>Time-based analysis</strong> – High correlation during earnings season; lower correlation during consolidation</li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 6px; border-left: 3px solid var(--accent-green);">
+                    <p style="font-size: 11px; color: var(--text-secondary); margin: 0;"><strong>🎓 Quick Start:</strong> If correlation > 0.5, news matters for this stock. Use sentiment changes as early signals. If correlation < 0.3, price is driven by other factors – focus on technical patterns instead.</p>
+                </div>
+            </div>
+            
+            <div class="chart-container" style="height: 350px;">
+                <canvas id="correlationChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/news-notification.js' %}"></script>
+    <script src="{% static 'js/news.js' %}"></script>
+</body>
+</html>

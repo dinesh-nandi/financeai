@@ -1,0 +1,167 @@
+{% comment %}Include: {% include 'includes/sidebar.html' with active='dashboard' %}{% endcomment %}
+<aside class="sidebar">
+    <ul class="sidebar-menu">
+        <li class="sidebar-item">
+            <a href="{% url 'dashboard' %}" class="sidebar-link{% if active == 'dashboard' %} active{% endif %}">
+                <span class="sidebar-icon sidebar-icon-svg" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                </span>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'learning' %}" class="sidebar-link{% if active == 'learning' %} active{% endif %}">
+                <span class="sidebar-icon sidebar-icon-svg" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8"/><path d="M8 11h8"/></svg>
+                </span>
+                <span>Learning</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'prediction' %}" class="sidebar-link{% if active == 'prediction' %} active{% endif %}">
+                <span class="sidebar-icon sidebar-icon-svg" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                </span>
+                <span>Predictions</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'news' %}" class="sidebar-link{% if active == 'news' %} active{% endif %}">
+                <span class="sidebar-icon sidebar-icon-svg" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+                </span>
+                <span>News</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'portfolio' %}" class="sidebar-link{% if active == 'portfolio' %} active{% endif %}">
+                <span class="sidebar-icon sidebar-icon-svg" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z"/></svg>
+                </span>
+                <span>Portfolio</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'advisor' %}" class="sidebar-link{% if active == 'advisor' %} active{% endif %}">
+                <span class="sidebar-icon sidebar-icon-svg" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+                </span>
+                <span>AI Advisor</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'community' %}" class="sidebar-link{% if active == 'community' %} active{% endif %}">
+                <span class="sidebar-icon sidebar-icon-svg" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                <span>Community</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Markets table in sidebar -->
+    <div class="sidebar-markets">
+        <div class="sidebar-markets-header">
+            <svg class="sidebar-markets-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+            <span class="sidebar-markets-title">Markets</span>
+        </div>
+        <ul class="sidebar-markets-list">
+            <li class="sidebar-markets-item" data-market="nifty">
+                <div class="sidebar-markets-item-left">
+                    <span class="sidebar-markets-name">NIFTY</span>
+                    <span class="sidebar-markets-value">25,496.55</span>
+                </div>
+                <span class="sidebar-markets-change positive">+0.06%</span>
+            </li>
+            <li class="sidebar-markets-item" data-market="sensex">
+                <div class="sidebar-markets-item-left">
+                    <span class="sidebar-markets-name">SENSEX</span>
+                    <span class="sidebar-markets-value">82,248.61</span>
+                </div>
+                <span class="sidebar-markets-change negative">-0.03%</span>
+            </li>
+            <li class="sidebar-markets-item" data-market="gold">
+                <div class="sidebar-markets-item-left">
+                    <span class="sidebar-markets-name">Gold</span>
+                    <span class="sidebar-markets-value">5,208.60</span>
+                </div>
+                <span class="sidebar-markets-change positive">+0.28%</span>
+            </li>
+            <li class="sidebar-markets-item" data-market="silver">
+                <div class="sidebar-markets-item-left">
+                    <span class="sidebar-markets-name">Silver</span>
+                    <span class="sidebar-markets-value">89.35</span>
+                </div>
+                <span class="sidebar-markets-change positive">+2.01%</span>
+            </li>
+            <li class="sidebar-markets-item" data-market="usdinr">
+                <div class="sidebar-markets-item-left">
+                    <span class="sidebar-markets-name">USD/INR</span>
+                    <span class="sidebar-markets-value">90.993</span>
+                </div>
+                <span class="sidebar-markets-change positive">+0.02%</span>
+            </li>
+        </ul>
+        <a href="{% url 'prediction' %}" class="sidebar-markets-link">See market →</a>
+    </div>
+</aside>
+<script>
+(function() {
+    var SIDEBAR_MARKETS_INTERVAL_MS = 2000;
+    var items = document.querySelectorAll('.sidebar-markets-item[data-market]');
+    if (!items.length) return;
+
+    var decimals = { nifty: 2, sensex: 2, gold: 2, silver: 2, usdinr: 3 };
+    var current = {};
+    items.forEach(function(li) {
+        var key = li.getAttribute('data-market');
+        var valEl = li.querySelector('.sidebar-markets-value');
+        if (!key || !valEl) return;
+        var raw = valEl.textContent.replace(/,/g, '');
+        current[key] = parseFloat(raw) || 0;
+    });
+
+    function formatValue(key, num) {
+        var d = decimals[key];
+        if (d === 3) return num.toFixed(3);
+        var s = num.toFixed(d);
+        if (num >= 1000) {
+            var parts = s.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            s = parts.join('.');
+        }
+        return s;
+    }
+
+    function updateRow(li, key, newVal, pct) {
+        var valEl = li.querySelector('.sidebar-markets-value');
+        var chEl = li.querySelector('.sidebar-markets-change');
+        if (!valEl || !chEl) return;
+        valEl.textContent = formatValue(key, newVal);
+        var sign = pct >= 0 ? '+' : '';
+        chEl.textContent = sign + pct.toFixed(2) + '%';
+        chEl.classList.remove('positive', 'negative');
+        chEl.classList.add(pct >= 0 ? 'positive' : 'negative');
+    }
+
+    function tick() {
+        items.forEach(function(li) {
+            var key = li.getAttribute('data-market');
+            if (!key || current[key] == null) return;
+            var prev = current[key];
+            var changePct = (Math.random() - 0.48) * 0.2;
+            var newVal = prev * (1 + changePct / 100);
+            if (key === 'usdinr') newVal = Math.max(80, Math.min(100, newVal));
+            if (key === 'gold') newVal = Math.max(4500, Math.min(6500, newVal));
+            if (key === 'silver') newVal = Math.max(70, Math.min(110, newVal));
+            if (key === 'nifty') newVal = Math.max(22000, Math.min(27000, newVal));
+            if (key === 'sensex') newVal = Math.max(70000, Math.min(90000, newVal));
+            var pct = ((newVal - prev) / prev) * 100;
+            current[key] = newVal;
+            updateRow(li, key, newVal, pct);
+        });
+    }
+
+    setInterval(tick, SIDEBAR_MARKETS_INTERVAL_MS);
+})();
+</script>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strategy Advisor - FinanceAI</title>
+    <link rel="icon" type="image/png" href="{% static 'stock.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'index' %}" class="logo">
+                <div class="logo-icon logo-icon-chart">
+                    <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 9-9"/><path d="M21 12v6h-6"/></svg>
+                </div>
+                <span class="gradient-text">FinanceAI</span>
+            </a>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span id="user-name" style="color: var(--text-secondary); font-size: 14px;">Welcome, User</span>
+                <button onclick="logout()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    {% include 'includes/sidebar.html' with active='advisor' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">AI Strategy Advisor</h1>
+            <p class="page-subtitle">Get personalized investment advice from our advanced AI</p>
+        </div>
+
+        <!-- AI Info Cards -->
+        <div class="stats-grid" style="margin-bottom: 24px;">
+            <div class="stat-card">
+                <div class="stat-label">AI Model</div>
+                <div class="stat-value" style="color: var(--accent-cyan);">GPT-Finance v2</div>
+                <div class="stat-change" style="color: var(--text-secondary);">
+                    <span>Trained on 10M+ data points</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Response Time</div>
+                <div class="stat-value" style="color: var(--accent-green);">&lt;2s</div>
+                <div class="stat-change" style="color: var(--text-secondary);">
+                    <span>Average</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Accuracy Rate</div>
+                <div class="stat-value" style="color: var(--accent-blue);">87%</div>
+                <div class="stat-change" style="color: var(--text-secondary);">
+                    <span>Recommendation success</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <!-- Welcome Message -->
+                <div class="chat-message ai">
+                    <div class="chat-avatar">🤖</div>
+                    <div class="chat-bubble">
+                        <p>Hello! I'm your AI Financial Advisor. I can help you with:</p>
+                        <ul style="margin-top: 12px; margin-left: 20px; line-height: 1.8;">
+                            <li>Portfolio optimization strategies</li>
+                            <li>Stock analysis and recommendations</li>
+                            <li>Market trend insights</li>
+                            <li>Risk management advice</li>
+                            <li>Financial planning guidance</li>
+                        </ul>
+                        <p style="margin-top: 12px;">What would you like to know today?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                    <input 
+                        type="text" 
+                        id="chat-input" 
+                        class="chat-input" 
+                        placeholder="Ask me anything about investing, stocks, or your portfolio..."
+                        onkeypress="handleKeyPress(event)"
+                    >
+                    <button class="btn btn-primary" onclick="sendMessage()">
+                        <span>📤</span>
+                    </button>
+                </div>
+                
+                <!-- Suggested Prompts -->
+                <div class="suggested-prompts">
+                    <span class="suggested-prompt" onclick="usePrompt('Should I invest in tech stocks right now?')">
+                        Should I invest in tech stocks?
+                    </span>
+                    <span class="suggested-prompt" onclick="usePrompt('Analyze my portfolio risk')">
+                        Analyze my portfolio risk
+                    </span>
+                    <span class="suggested-prompt" onclick="usePrompt('What are the best dividend stocks?')">
+                        Best dividend stocks
+                    </span>
+                    <span class="suggested-prompt" onclick="usePrompt('How do I diversify my portfolio?')">
+                        Diversification tips
+                    </span>
+                    <span class="suggested-prompt" onclick="usePrompt('Explain dollar-cost averaging')">
+                        Dollar-cost averaging
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div style="margin-top: 24px;">
+            <h3 style="margin-bottom: 16px;">Quick Actions</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                <div class="glass-card" style="padding: 20px; cursor: pointer; transition: var(--transition);" onclick="usePrompt('Generate a portfolio report')">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); border-radius: 10px; display: flex; align-items: center; justify-content: center;">📊</div>
+                        <div>
+                            <div style="font-weight: 600;">Portfolio Report</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Get AI analysis of your holdings</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding: 20px; cursor: pointer; transition: var(--transition);" onclick="usePrompt('What stocks should I watch this week?')">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan)); border-radius: 10px; display: flex; align-items: center; justify-content: center;">👀</div>
+                        <div>
+                            <div style="font-weight: 600;">Stock Watchlist</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Stocks to watch this week</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding: 20px; cursor: pointer; transition: var(--transition);" onclick="usePrompt('Give me market outlook for next month')">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); border-radius: 10px; display: flex; align-items: center; justify-content: center;">🔮</div>
+                        <div>
+                            <div style="font-weight: 600;">Market Outlook</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">AI market predictions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding: 20px; cursor: pointer; transition: var(--transition);" onclick="usePrompt('Suggest a low-risk investment strategy')">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-orange), var(--accent-red)); border-radius: 10px; display: flex; align-items: center; justify-content: center;">🛡️</div>
+                        <div>
+                            <div style="font-weight: 600;">Risk Strategy</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Low-risk investment ideas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div style="margin-top: 24px; padding: 16px; background: var(--bg-glass); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span style="font-size: 20px;">⚠️</span>
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">Investment Disclaimer</div>
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        The AI advisor provides educational information and analysis based on historical data and market trends. 
+                        It does not constitute financial advice. Always consult with a qualified financial advisor before making 
+                        investment decisions. Past performance does not guarantee future results.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/news-notification.js' %}"></script>
+    <script src="{% static 'js/advisor.js' %}"></script>
+</body>
+</html>

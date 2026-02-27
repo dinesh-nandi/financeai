@@ -1,0 +1,157 @@
+{
+  "info": {
+    "name": "FinanceAI - Auth API",
+    "description": "Authentication endpoints for FinanceAI (Register, Login, Profile, Logout, Stats, Activities, Wallet). Set `base_url` to e.g. http://localhost:8000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "access", "value": "" },
+    { "key": "refresh", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass1\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"risk_appetite\": \"moderate\",\n  \"experience_level\": \"beginner\"\n}"
+        },
+        "url": "{{base_url}}/api/auth/register/",
+        "description": "Create a new user. Returns access + refresh tokens and user object. Saves tokens to collection variables for other requests."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res.status === 'success' && res.data) {",
+              "  if (res.data.access) pm.collectionVariables.set('access', res.data.access);",
+              "  if (res.data.refresh) pm.collectionVariables.set('refresh', res.data.refresh);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass1\"\n}"
+        },
+        "url": "{{base_url}}/api/auth/login/",
+        "description": "Login with email and password. Saves access + refresh to collection variables."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res.status === 'success' && res.data) {",
+              "  if (res.data.access) pm.collectionVariables.set('access', res.data.access);",
+              "  if (res.data.refresh) pm.collectionVariables.set('refresh', res.data.refresh);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "url": "{{base_url}}/api/auth/profile/",
+        "description": "Get current user profile. Requires auth."
+      }
+    },
+    {
+      "name": "Update Profile",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\"\n}"
+        },
+        "url": "{{base_url}}/api/auth/profile/",
+        "description": "Update current user (username, name, email, profile fields). Requires auth."
+      }
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"{{refresh}}\"\n}"
+        },
+        "url": "{{base_url}}/api/auth/logout/",
+        "description": "Blacklist refresh token. Optional body with refresh."
+      }
+    },
+    {
+      "name": "User Stats",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "url": "{{base_url}}/api/auth/stats/",
+        "description": "Get user statistics. Requires auth."
+      }
+    },
+    {
+      "name": "User Activities",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access}}" }
+        ],
+        "url": "{{base_url}}/api/auth/activities/",
+        "description": "List recent user activities. Requires auth."
+      }
+    },
+    {
+      "name": "Wallet - Get Nonce",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/auth/wallet/nonce/?address=0xYourEthereumAddress",
+        "description": "Get one-time nonce for wallet sign-in. Replace address with real Ethereum address."
+      }
+    },
+    {
+      "name": "Wallet - Verify",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"address\": \"0xYourEthereumAddress\",\n  \"signature\": \"0x...\"\n}"
+        },
+        "url": "{{base_url}}/api/auth/wallet/verify/",
+        "description": "Verify wallet signature and get tokens. Use nonce from Get Nonce, sign with wallet, paste signature here."
+      }
+    }
+  ]
+}

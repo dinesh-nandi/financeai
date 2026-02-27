@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - FinanceAI</title>
+    <link rel="icon" type="image/png" href="{% static 'stock.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'index' %}" class="logo">
+                <div class="logo-icon logo-icon-chart">
+                    <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 9-9"/><path d="M21 12v6h-6"/></svg>
+                </div>
+                <span class="gradient-text">FinanceAI</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'learning' %}">Learn</a></li>
+                <li><a href="{% url 'prediction' %}">Predict</a></li>
+                <li><a href="{% url 'news' %}">News</a></li>
+                <li><a href="{% url 'portfolio' %}">Portfolio</a></li>
+                <li><a href="{% url 'advisor' %}">Advisor</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="{% url 'login' %}" class="btn btn-secondary">Sign In</a>
+                <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    {% include 'includes/sidebar.html' with active='community' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Community</h1>
+            <p class="page-subtitle">Investors, traders, and experts sharing insights in a Twitter-style feed.</p>
+        </div>
+
+        <div class="community-layout">
+            <!-- Compose box -->
+            <section class="glass-card community-compose">
+                <div class="community-compose-header">
+                    <div class="community-avatar">👤</div>
+                    <div>
+                        <div id="community-user-name" class="community-user-name">Share your thoughts</div>
+                        <div class="community-user-sub">Post your experiences, analysis, and charts.</div>
+                    </div>
+                </div>
+                <textarea id="community-post-text" class="form-input" rows="3" placeholder="What's your market view today?"></textarea>
+                <div class="community-compose-actions">
+                    <label class="btn btn-secondary btn-small">
+                        📎 Attach image
+                        <input type="file" id="community-post-image" accept="image/*" style="display:none;">
+                    </label>
+                    <button id="community-post-btn" class="btn btn-primary btn-small">
+                        Post
+                    </button>
+                </div>
+            </section>
+
+            <!-- Feed -->
+            <section class="community-feed glass-card">
+                <h3 class="community-section-title">Latest Posts</h3>
+                <div id="community-feed-list"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/news-notification.js' %}"></script>
+    <script src="{% static 'js/community.js' %}"></script>
+</body>
+</html>
+
