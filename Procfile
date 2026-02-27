@@ -1,1 +1,1 @@
-web: gunicorn finai.wsgi
+web: gunicorn finance_ai.wsgi
